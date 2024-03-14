@@ -42,7 +42,8 @@ INSTALLED_APPS = [
 
     # Custom apps
 
-    'core',                                         
+    'core', 
+    'pages',                                        
 ]
 
 MIDDLEWARE = [
@@ -60,7 +61,11 @@ ROOT_URLCONF = 'webwise.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR,'templates')],
+        'DIRS': [
+            os.path.join(BASE_DIR,'templates'),
+            os.path.join(BASE_DIR,'pages','templates','pages'),
+            os.path.join(BASE_DIR,'core','templates','core'),
+            ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -82,7 +87,7 @@ WSGI_APPLICATION = 'webwise.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'webwise',
+        'NAME': 'webwise1',
         'PORT': '3306',
         'HOST':'localhost',
         'USER' : 'root',
@@ -127,10 +132,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS =[
-    os.path.join(BASE_DIR,'static')
+    os.path.join(BASE_DIR,'static'),
+    os.path.join(BASE_DIR, 'pages', 'static')
 ]
 
-STATIC_ROOT = os.path.join(BASE_DIR,'static')
+STATIC_ROOT = os.path.join(BASE_DIR,'assets')
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
