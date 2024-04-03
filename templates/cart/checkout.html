@@ -1,6 +1,126 @@
 {% extends 'base.html' %}
 {% load static%}
-
+{% load product_tags %}
+{% load cart_tag %}
 {% block content %}
+<!-- page-banner-area-start -->
+<div class="page-banner-area page-banner-height-2" data-background="{% static 'assets/img/banner/page-banner-4.jpg' %}">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="page-banner-content text-center">
+                    <h4 class="breadcrumb-title">Checkout</h4>
+                    <div class="breadcrumb-two">
+                        <nav>
+                            <nav class="breadcrumb-trail breadcrumbs">
+                                <ul class="breadcrumb-menu">
+                                    <li class="breadcrumb-trail">
+                                        <a href="{% url 'index'%}"><span>Home</span></a>
+                                    </li>
+                                    <li class="trail-item">
+                                        <span>checkout</span>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- page-banner-area-end -->
+<!-- account-area-start -->
+<div class="account-area mt-70 mb-70">
+    <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                {% if message.tags == 'success' %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{message}}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-lable="Close">
+                                    
+                        </button>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        <h3 class="display-4 mb-4">Address</h3>
+        <form action="{% url 'placeorder' %}" method="post">
+            {% csrf_token %}
+        <div class="row">
+            <hr>
+            <div class="col-lg-6">
+                <div class="basic-login mb-50">
+                    <label for="pass">Street Address <span>*</span></label>
+                    <input id="pass" type="text" placeholder="Apartment, suite, unit etc." name="street_address" required>
+                    
+                    <label for="pass">Town / City <span>*</span></label>
+                    <input id="pass" type="text" placeholder="Surat..." name="city" required>
+                    
+                    <label for="pass">State / County <span>*</span></label>
+                    <input id="pass" type="text" placeholder="India..." name="state" required>
+                    
+                    <label for="pass">Postcode / ZIP <span>*</span></label>
+                    <input id="pass" type="text" placeholder="395006..." name="postalcode" required>
+                    
+                    <label for="pass">Phone <span>*</span></label>
+                    <input id="pass" type="text" placeholder="Enter Phonenumber..." name="phone" required>
 
+                    
+                    <input id="pass" type="hidden" value="{{order_id}}" name="order_id" required>
+
+
+                    <input id="pass" type="hidden" value="{{payment}}" name="payment" required>
+                    <input id="pass" type="hidden" value="{{cart_total_amount}}" name="cart_total_amount" required>
+                    <input id="pass" type="hidden" value=" {{packing_cost}}" name="packing_cost" required>
+                    <input id="pass" type="hidden" value=" {{tax}}" name="tax" required>
+                    {% if cart_total_amount > 500 %}
+                    <input id="pass" type="hidden" value="{{0}}" name="delivery_cost" required>
+                    <input id="pass" type="hidden" value="{{cart_total_amount|add:packing_cost|add:tax}}" name="total" required>
+                    {% else %}
+                    <input id="pass" type="hidden" value="{{500}}" name="delivery_cost" required>
+                    <input id="pass" type="hidden" value="{{cart_total_amount|add:packing_cost|add:tax|add:500}}" name="total" required>
+                    {% endif %}
+                    
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="row justify-content-end">
+                    <div class="basic-login">
+                        <div class="col-md-10">
+                            <div class="cart-page-total">
+                                <h2>Cart totals</h2>
+                                <ul class="mb-20">
+                                    <li>Subtotal <span>₹ {{cart_total_amount}}</span></li>
+                                    <li>Packing Cost <span>₹ {{packing_cost}} </span></li>
+                                    <li>Tax <span>₹ {{tax}} </span></li>
+                                    {% if valid_coupon %}
+                                        <li class="text-success">Coupon Code Applied <span>{{coupon.discount}}%</span></li>
+                                    {% endif %}
+                                    {% if cart_total_amount > 500 %}
+                                        <li class="text-success">Delivery Charge <span class="text-success"> Free</span></li>
+                                        <li class="text-success">Total <span class="text-success">{{cart_total_amount|add:packing_cost|add:tax}} </span></li>
+                                    {% else %}
+                                        
+                                        <li class="text-danger">Delivery Charge <span class="text-danger">₹ 500 </span></li>
+                                        <li class="text-success">Total <span class="text-success">₹ {{cart_total_amount|add:packing_cost|add:tax|add:500}} </span></li>
+                                    {% endif %}
+
+
+
+                                </ul>
+                                <button type="submit" class="tp-btn-h1">Continue</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </form>
+    </div>
+</div>
+
+                        
+                    
 {% endblock %}

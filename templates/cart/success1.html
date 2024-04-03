@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static%}
+{% load product_tags %}
+{% load cart_tag %}
+{% block content %}
+<div class="page-banner-area page-banner-height-2" data-background="{% static 'assets/img/banner/page-banner-4.jpg' %}">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="page-banner-content text-center">
+                    <h4 class="breadcrumb-title">Success</h4>
+                    <div class="breadcrumb-two">
+                        <nav>
+                            <nav class="breadcrumb-trail breadcrumbs">
+                                <ul class="breadcrumb-menu">
+                                    <li class="breadcrumb-trail">
+                                        <a href="{% url 'index'%}"><span>Home</span></a>
+                                    </li>
+                                    <li class="trail-item">
+                                        <span>Success</span>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- page-banner-area-end -->
+<div class="account-area mt-70 mb-70">
+    <div class="container">
+        
+        
+            <div class="row">
+                <hr>
+                <div class="col-lg-3 col-md-2">
+
+                </div>
+                <div class="col-lg-6 col-md-8">
+                    <div class="basic-login mb-50">
+                        <div class=""><img  src="{% static 'assets/img/logo/cmpted_logo.png' %}" alt=""></div>
+                        <h3 class="display-4 mb-4">Thank you for ordering in our store.</h3>
+                        <div class="btn_cmpted">
+                            <a href="{% url 'index' %}" class="tp-btn-h1" id="rzp-button1">Countinue Shopping </a>
+                        </div>
+                        
+                        
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-2">
+
+                </div>
+                
+            </div>
+    </div>
+</div>
+
+
+
+{% endblock %}

@@ -28,6 +28,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+RAZORPAY_KEY_ID='rzp_test_97dAlfw7HQYnK7'
+RAZORPAY_KEY_SECRET='L2iACSkjEOdwKTeyJhkK9gE9'
 
 # Application definition
 
@@ -42,6 +44,7 @@ INSTALLED_APPS = [
     'category',
     'product',
     'cart',
+    'order',
 
     # for securedata
     'ckeditor',

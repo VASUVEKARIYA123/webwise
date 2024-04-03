@@ -3,6 +3,7 @@ from django.conf.urls.static import static
 from django.urls import include, path
 from . import views
 
+
 urlpatterns = [
     path('', views.index,name="index"),
     path('product/<slug:slug>',views.PRODUCT_DETAILS,name='product_details'),
@@ -32,6 +33,9 @@ urlpatterns = [
     path('cart/cart_clear/', views.cart_clear, name='cart_clear'),
     path('cart/cart-detail/',views.cart_detail,name='cart_detail'),
     path('cart/checkout',views.CHECKOUT,name='checkout'),
+    path('cart/checkout/placeorder',views.PLACE_ORDER,name='placeorder'),
+    path('cart/checkout/success',views.SUCCESS,name='success'),
+    path('cart/checkout/successpage',views.SUCCESS1,name='success1'),
 
     path('accounts/',include('django.contrib.auth.urls')),
 ] + static(settings.MEDIA_URL,document_root =settings.MEDIA_ROOT)

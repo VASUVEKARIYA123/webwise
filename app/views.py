@@ -1,15 +1,25 @@
+import math
+from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
+import razorpay
+
 
 from app.models import slider
 from app.models import banner_area
 from category.models import Category, Main_Category
+from order.models import AddressAndInfo, Order, OrderItem
 from product.models import Product,Coupon_Code
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from cart.cart import Cart
+from razorpay.client import Client
+from django.views.decorators.csrf import csrf_exempt
+
+
+client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID,settings.RAZORPAY_KEY_SECRET))
 
 from django.template.loader import render_to_string
 from django.db.models import Max , Min , Sum
@@ -202,7 +212,8 @@ def cart_detail(request):
            if coupon_code :
                   try:
                        coupon = Coupon_Code.objects.get(code = coupon_code)
-                       valid_coupon = "Are Applicable On Current Order !"  
+                       valid_coupon = "Are Applicable On Current Order !" 
+                       cart_total_amount = cart.cart_total_amount ; 
                   except:
                          invalid_coupon = "Invalid Coupon Code !"
     context = { 
@@ -215,4 +226,115 @@ def cart_detail(request):
     return render(request, 'cart/cart.html',context)
 
 def CHECKOUT(request):
-       return render(request,'cart/checkout.html')
+       cart = request.session.get('cart')
+       packing_cost = sum(i['packing_cost'] for i in cart.values() if i)
+       tax =math.floor( sum(i['tax']*i['price']/100 for i in cart.values() if i))
+       coupon = None
+       valid_coupon = None
+       invalid_coupon = None
+       payment = client.order.create({
+              "amount":500,
+              "currency":"INR",
+              "payment_capture":"1"
+       })
+       order_id = payment['id']
+
+       
+       context = { 
+                'packing_cost':packing_cost,
+                'tax':tax,
+                'coupon' : coupon,
+                'valid_coupon' : valid_coupon,
+                'invalid_coupon' : invalid_coupon,
+                'order_id' : order_id,
+                'payment' : payment
+        }
+       return render(request,'cart/checkout.html',context)
+
+def PLACE_ORDER(request):
+       if request.method == 'POST':
+                uid = request.session.get('_auth_user_id')
+                user = User.objects.get(id = uid)
+                address = request.POST.get('street_address')
+                city = request.POST.get('city')
+                stat = request.POST.get('state')
+                postalcode = request.POST.get('postalcode')
+                phone = request.POST.get('phone')
+                order_id = request.POST.get('order_id')
+                payment = request.POST.get('payment')
+                cart_total_amount = request.POST.get('cart_total_amount')
+                packing_cost = request.POST.get('packing_cost')
+                delivery_cost = request.POST.get('delivery_cost')
+                tax = request.POST.get('tax')
+                total = request.POST.get('total')
+                cart = request.session.get('cart')
+
+                addressAndInfo = AddressAndInfo(
+                       country = stat,
+                       city = city,
+                       addre = address,
+                       phone = phone,
+                       postalcode = postalcode,
+                       user = user,
+                )
+                addressAndInfo.save()
+
+                order = Order(
+                       user = user,
+                       packing_cost = packing_cost,
+                       tax = tax,
+                       delivery_charge = delivery_cost,
+                       total = total,
+                       payment_id = order_id,
+                       address = addressAndInfo,
+                )
+                order.save()
+
+                for i in cart : 
+                        a = (int(cart[i]['price']))
+                        b = cart[i]['quantity']
+                        total = a*b
+                        print(order)
+                        print(total)
+                        item = OrderItem(
+                                order = order,
+                                Product_id = cart[i]['product_id'],
+                                quantity = cart[i]['quantity'],
+                                price = cart[i]['price'],
+                                total = total
+                        )
+                        item.save()
+                
+
+                        context = { 
+                                'order_id' : order_id,
+                                
+                        }
+
+
+       return render(request,'cart/success.html',context)
+
+@csrf_exempt
+def SUCCESS(request):
+       if request.method == "POST":
+              print('*************************')
+              print('aaaaaaaaaaaaaaaaaaaaaaa')
+              print('*************************')
+              a = request.POST
+              order_id = ""
+
+              for key, val in a.items():
+                     if key == 'razorpay_order_id':
+                            order_id = val
+                            break
+              user = Order.objects.filter(payment_id = order_id).first()
+              user.paid = True
+              user.save()
+                            
+       return redirect('success1')
+
+@csrf_exempt
+def SUCCESS1(request):
+       return render(request,'cart/success1.html')
+
+       
